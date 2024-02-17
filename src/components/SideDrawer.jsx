@@ -118,12 +118,12 @@ const SideDrawer = () => {
             className="flex items-center gap-1"
           >
             {" "}
-            <IoIosSearch className="text-xl" />{" "}
-            <Text d={{ base: "none", md: "flex" }}>Search User</Text>
+            <IoIosSearch className="text-3xl" />{" "}
+            <Text display={{ base: "none", md: "flex" }}>Search User</Text>
           </Button>
         </Tooltip>
 
-        <Text fontSize="3xl" fontFamily="Work sans">
+        <Text className="text-3xl text-center" fontFamily="Work sans">
           i-chat
         </Text>
         <div>

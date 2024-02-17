@@ -116,9 +116,11 @@ const SingleChat = () => {
   async function sendMessage(e) {
     if (e.key === "Enter" && newMessages) {
       try {
+        let chatt = newMessages;
+        setNewMessages("");
         const { data } = await axios.post(
           `${frontendUrl}api/v1/message`,
-          { content: newMessages, chatId: selectedChat._id },
+          { content: chatt, chatId: selectedChat._id },
           {
             headers: {
               "Content-type": "application/json",
@@ -130,7 +132,6 @@ const SingleChat = () => {
         );
         socket.emit("stop typing", selectedChat._id);
         setMessages((pre) => [...pre, data.data]);
-        setNewMessages("");
 
         socket.emit("new message", data.data);
       } catch (error) {
