@@ -22,7 +22,7 @@ import { ArrowBackIcon, ViewIcon } from "@chakra-ui/icons";
 import UserBadgeItem from "./UserBadgeItem";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { header } from "../utils/constant";
+import { frontendUrl, header } from "../utils/constant";
 import UserListItem from "./UserListItem";
 const UpdateGroupChatModel = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -43,7 +43,7 @@ const UpdateGroupChatModel = () => {
     setRenameLoading(true);
     try {
       const { data } = await axios.put(
-        "http://localhost:8000/api/v1/chat/rename",
+        `${frontendUrl}api/v1/chat/rename`,
         { chatId: selectedChat._id, chatName: groupChatName },
         header
       );
@@ -63,7 +63,7 @@ const UpdateGroupChatModel = () => {
     setLoading(true);
     try {
       const { data } = await axios.get(
-        `http://localhost:8000/api/v1/user?search=${q}`,
+        `${frontendUrl}api/v1/user?search=${q}`,
         header
       );
 
@@ -85,7 +85,7 @@ const UpdateGroupChatModel = () => {
       setLoading(true);
 
       const { data } = await axios.put(
-        `http://localhost:8000/api/v1/chat/groupRemove`,
+        `${frontendUrl}api/v1/chat/groupRemove`,
         { chatId: selectedChat._id, userId: userData._id },
         header
       );
@@ -113,7 +113,7 @@ const UpdateGroupChatModel = () => {
       setLoading(true);
 
       const { data } = await axios.put(
-        `http://localhost:8000/api/v1/chat/groupAdd`,
+        `${frontendUrl}api/v1/chat/groupAdd`,
         { chatId: selectedChat._id, userId: userData._id },
         header
       );
