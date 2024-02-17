@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { chatState } from "../context/ChatProvider";
 import axios from "axios";
-import { header } from "../utils/constant";
-import { Box, Button, Stack, Text } from "@chakra-ui/react";
+import { frontendUrl, header } from "../utils/constant";
+import { Box, Button, Spinner, Stack, Text } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { getSender } from "../utils/chatHelper";
 import GroupChatModel from "./GroupChatModel";
@@ -14,7 +14,7 @@ const MyChats = () => {
     chatState();
   async function fetchChat() {
     try {
-      const { data } = await axios.get("http://localhost:8000/api/v1/chat", {
+      const { data } = await axios.get(`${frontendUrl}api/v1/chat`, {
         headers: {
           "Content-type": "application/json",
           Authorization: `Bearer ${JSON.parse(localStorage.getItem("token"))}`,
@@ -26,7 +26,7 @@ const MyChats = () => {
   }
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
-    console.log("fetchAgain");
+
     fetchChat();
   }, [fetchAgain]);
   return (
@@ -61,45 +61,49 @@ const MyChats = () => {
         </GroupChatModel>
       </Box>
 
-      <Box
-        p={3}
-        display="flex"
-        flexDir="column"
-        alignItems="center"
-        borderRadius="lg"
-        overflowY="hidden"
-        justifyContent="center"
-      >
-        {" "}
-        {chats ? (
-          <Stack overflowY="scroll" w="100% ">
-            {chats.map((chat) => {
-              return (
-                <Box
-                  className="space-y-2"
-                  onClick={() => setSelectedChat(chat)}
-                  cursor="pointer"
-                  px={3}
-                  w="100%"
-                  color={selectedChat === chat ? "white" : "black"}
-                  bg={selectedChat === chat ? "#a3e635" : "#F8F8F8"}
-                  py={2}
-                  borderRadius="lg"
-                  key={chat._id}
-                >
-                  <Text w="100%" className="px-3 text-lg">
-                    {!chat.isGroupChat
-                      ? getSender(loggedUser, chat.users)
-                      : chat.chatName}
-                  </Text>
-                </Box>
-              );
-            })}
-          </Stack>
-        ) : (
-          <ChatLoading />
-        )}
-      </Box>
+      {chats.length === 0 ? (
+        <Spinner className="flex justify-center h-full items-center" />
+      ) : (
+        <Box
+          p={3}
+          display="flex"
+          flexDir="column"
+          alignItems="center"
+          borderRadius="lg"
+          overflowY="hidden"
+          justifyContent="center"
+        >
+          {" "}
+          {chats ? (
+            <Stack overflowY="scroll" w="100% ">
+              {chats.map((chat) => {
+                return (
+                  <Box
+                    className="space-y-2"
+                    onClick={() => setSelectedChat(chat)}
+                    cursor="pointer"
+                    px={3}
+                    w="100%"
+                    color={selectedChat === chat ? "white" : "black"}
+                    bg={selectedChat === chat ? "#a3e635" : "#F8F8F8"}
+                    py={2}
+                    borderRadius="lg"
+                    key={chat._id}
+                  >
+                    <Text w="100%" className="px-3 text-lg">
+                      {!chat.isGroupChat
+                        ? getSender(loggedUser, chat.users)
+                        : chat.chatName}
+                    </Text>
+                  </Box>
+                );
+              })}
+            </Stack>
+          ) : (
+            <ChatLoading />
+          )}
+        </Box>
+      )}
     </Box>
   );
 };

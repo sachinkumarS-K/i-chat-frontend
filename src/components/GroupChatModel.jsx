@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { chatState } from "../context/ChatProvider";
 import axios from "axios";
-import { header } from "../utils/constant";
+import { frontendUrl, header } from "../utils/constant";
 import toast from "react-hot-toast";
 import UserListItem from "./UserListItem";
 import UserBadgeItem from "./UserBadgeItem";
@@ -34,7 +34,7 @@ const GroupChatModel = ({ children }) => {
     setLoading(true);
     try {
       const { data } = await axios.get(
-        `http://localhost:8000/api/v1/user?search=${q}`,
+        `${frontendUrl}api/v1/user?search=${q}`,
         header
       );
       console.log(data.data);
@@ -52,7 +52,7 @@ const GroupChatModel = ({ children }) => {
     setLoading(true);
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/api/v1/chat/group",
+        `${frontendUrl}api/v1/chat/group`,
         {
           name: groupChatName,
           users: JSON.stringify(selectedUser.map((u) => u._id)),

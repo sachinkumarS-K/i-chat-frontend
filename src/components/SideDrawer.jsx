@@ -32,7 +32,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import ChatLoading from "./loader/ChatLoading";
 import UserListItem from "./UserListItem";
-import { header } from "../utils/constant";
+import { frontendUrl, header } from "../utils/constant";
 const SideDrawer = () => {
   const {
     user,
@@ -64,7 +64,7 @@ const SideDrawer = () => {
     }
     try {
       const { data } = await axios.get(
-        `http://localhost:8000/api/v1/user?search=${search}`,
+        `${frontendUrl}api/v1/user?search=${search}`,
         {
           headers: {
             "Content-type": "application/json",
@@ -83,7 +83,7 @@ const SideDrawer = () => {
     setLoadingChat(true);
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/api/v1/chat",
+        `${frontendUrl}api/v1/chat`,
         { userId },
         header
       );

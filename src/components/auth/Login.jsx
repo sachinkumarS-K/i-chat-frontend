@@ -13,6 +13,7 @@ import { FaRegEyeSlash } from "react-icons/fa";
 import { IoEyeOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { chatState } from "../../context/ChatProvider";
+import { frontendUrl } from "../../utils/constant";
 const Login = () => {
   const { setUser } = chatState();
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ const Login = () => {
     }
     try {
       const res = await toast.promise(
-        axios.post("http://localhost:8000/api/v1/user/login", formData),
+        axios.post(`${frontendUrl}api/v1/user/login`, formData),
         {
           loading: "logging in user...",
           success: "log in successfully",

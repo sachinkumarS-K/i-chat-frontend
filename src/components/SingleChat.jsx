@@ -8,59 +8,83 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
+import Lottie from "react-lottie";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { getSender, getSenderDetails } from "../utils/chatHelper";
 import ProfileModel from "./ProfileModel";
 import UpdateGroupChatModel from "./UpdateGroupChatModel";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { header } from "../utils/constant";
 import ScrollableChat from "./ScrollableChat";
 import io from "socket.io-client";
+import animationData from "../assets/ani.json";
+import { frontendUrl } from "../utils/constant";
+let socket;
 const SingleChat = () => {
   const { user, selectedChat, setSelectedChat } = chatState();
   const [loading, setLoading] = useState(false);
   const [newMessages, setNewMessages] = useState("");
   const [messages, setMessages] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const [typing, setTyping] = useState(false);
   const [socketConnected, setSocketConnected] = useState(false);
-  const ENDPOINT = "http://localhost:8000";
+  const ENDPOINT = "https://ichat-bj06.onrender.com";
   let selectedChatCompare;
-  const [socket, setSocket] = useState("");
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
 
-  async function typingHandler(e) {
-    setNewMessages(e.target.value);
-  }
-  let sockett;
   useEffect(() => {
-    sockett = io(ENDPOINT);
-    setSocket(sockett);
-    sockett.emit("setup", user);
-    sockett.on("connected", () => setSocketConnected(true));
+    socket = io(frontendUrl);
+    socket.emit("setup", user);
+    socket.on("connection", () => setSocketConnected(true));
+    socket.on("typing", () => setIsTyping(true));
+    socket.on("stop typing", () => setIsTyping(false));
   }, []);
+  const typingHandler = (e) => {
+    setNewMessages(e.target.value);
+
+    if (!socketConnected) return;
+
+    if (!typing) {
+      setTyping(true);
+      socket.emit("typing", selectedChat._id);
+    }
+    let lastTypingTime = new Date().getTime();
+    var timerLength = 3000;
+    setTimeout(() => {
+      var timeNow = new Date().getTime();
+      var timeDiff = timeNow - lastTypingTime;
+      if (timeDiff >= timerLength) {
+        socket.emit("stop typing", selectedChat._id);
+        setTyping(false);
+      }
+    }, timerLength);
+  };
 
   useEffect(() => {
     fetChats();
-
     selectedChatCompare = selectedChat;
   }, [selectedChat]);
 
   useEffect(() => {
-    console.log("1");
-    sockett.on("message recieved", (newMessageRecieved) => {
+    socket.on("message recieved", (newMessageRecieved) => {
+      console.log(newMessageRecieved);
       if (
-        !selectedChatCompare || // if chat is not selected or doesn't match current chat
+        !selectedChatCompare ||
         selectedChatCompare._id !== newMessageRecieved.chat._id
       ) {
-        if (!notification.includes(newMessageRecieved)) {
-          setNotification([newMessageRecieved, ...notification]);
-          setFetchAgain(!fetchAgain);
-        }
+        //something else
       } else {
-        setMessages([...messages, newMessageRecieved]);
+        setMessages((pre) => [...pre, newMessageRecieved]);
       }
     });
-    console.log("2");
-  }, []);
+  });
 
   async function fetChats() {
     if (!selectedChat) {
@@ -69,7 +93,7 @@ const SingleChat = () => {
     try {
       setLoading(true);
       const { data } = await axios.get(
-        `http://localhost:8000/api/v1/message/${selectedChat._id}`,
+        `${frontendUrl}api/v1/message/${selectedChat._id}`,
         {
           headers: {
             "Content-type": "application/json",
@@ -79,7 +103,6 @@ const SingleChat = () => {
           },
         }
       );
-      console.log(socket);
       setMessages((pre) => [...data.data]);
       socket.emit("join chat", selectedChat._id);
       console.log("join", selectedChat._id);
@@ -94,7 +117,7 @@ const SingleChat = () => {
     if (e.key === "Enter" && newMessages) {
       try {
         const { data } = await axios.post(
-          "http://localhost:8000/api/v1/message",
+          `${frontendUrl}api/v1/message`,
           { content: newMessages, chatId: selectedChat._id },
           {
             headers: {
@@ -105,11 +128,11 @@ const SingleChat = () => {
             },
           }
         );
-
+        socket.emit("stop typing", selectedChat._id);
         setMessages((pre) => [...pre, data.data]);
         setNewMessages("");
 
-        sockett.emit("new message", data.data);
+        socket.emit("new message", data.data);
       } catch (error) {
         console.log(error);
         toast.error(error.message);
@@ -172,6 +195,13 @@ const SingleChat = () => {
               </div>
             )}
             <FormControl onKeyDown={sendMessage} mt={3}>
+              {isTyping ? (
+                <div className="w-14 mb-2 ml-0">
+                  <Lottie options={defaultOptions} />
+                </div>
+              ) : (
+                <></>
+              )}
               <Input
                 variant="filled"
                 bg="E0E0E0"

@@ -4,3 +4,5 @@ export const header = {
     Authorization: `Bearer ${JSON.parse(localStorage.getItem("token"))}`,
   },
 };
+
+export const frontendUrl = "https://ichat-bj06.onrender.com/";
