@@ -21,7 +21,15 @@ import animationData from "../assets/ani.json";
 import { frontendUrl } from "../utils/constant";
 let socket;
 const SingleChat = () => {
-  const { user, selectedChat, setSelectedChat } = chatState();
+  const {
+    user,
+    selectedChat,
+    setSelectedChat,
+    notification,
+    setNotification,
+    setFetchAgain,
+    fetchAgain,
+  } = chatState();
   const [loading, setLoading] = useState(false);
   const [newMessages, setNewMessages] = useState("");
   const [messages, setMessages] = useState([]);
@@ -45,6 +53,10 @@ const SingleChat = () => {
     socket.on("connection", () => setSocketConnected(true));
     socket.on("typing", () => setIsTyping(true));
     socket.on("stop typing", () => setIsTyping(false));
+    return () => {
+      socket.off("setup");
+      socket.disconnect();
+    };
   }, []);
   const typingHandler = (e) => {
     setNewMessages(e.target.value);
@@ -71,7 +83,7 @@ const SingleChat = () => {
     fetChats();
     selectedChatCompare = selectedChat;
   }, [selectedChat]);
-
+  console.log("noti", notification);
   useEffect(() => {
     socket.on("message recieved", (newMessageRecieved) => {
       console.log(newMessageRecieved);
@@ -80,6 +92,11 @@ const SingleChat = () => {
         selectedChatCompare._id !== newMessageRecieved.chat._id
       ) {
         //something else
+        console.log(notification);
+        if (!notification.includes(newMessageRecieved)) {
+          setNotification([newMessageRecieved, ...notification]);
+          setFetchAgain(!fetchAgain);
+        }
       } else {
         setMessages((pre) => [...pre, newMessageRecieved]);
       }
@@ -118,6 +135,7 @@ const SingleChat = () => {
       try {
         let chatt = newMessages;
         setNewMessages("");
+
         const { data } = await axios.post(
           `${frontendUrl}api/v1/message`,
           { content: chatt, chatId: selectedChat._id },
@@ -131,9 +149,8 @@ const SingleChat = () => {
           }
         );
         socket.emit("stop typing", selectedChat._id);
-        setMessages((pre) => [...pre, data.data]);
-
         socket.emit("new message", data.data);
+        setMessages((pre) => [...pre, data.data]);
       } catch (error) {
         console.log(error);
         toast.error(error.message);

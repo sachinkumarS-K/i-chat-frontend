@@ -33,6 +33,7 @@ import axios from "axios";
 import ChatLoading from "./loader/ChatLoading";
 import UserListItem from "./UserListItem";
 import { frontendUrl, header } from "../utils/constant";
+import { getSender } from "../utils/chatHelper";
 const SideDrawer = () => {
   const {
     user,
@@ -42,6 +43,8 @@ const SideDrawer = () => {
     setSelectedChat,
     setFetchAgain,
     fetchAgain,
+    notification,
+    setNotification,
   } = chatState();
   const [search, setSearch] = useState("");
   const [searchState, setSearchState] = useState([]);
@@ -136,7 +139,16 @@ const SideDrawer = () => {
           <Menu>
             <MenuButton p={1}>
               <BellIcon fontSize="2xl" margin={1} />
-              {/* <MenuList></MenuList> */}
+              <MenuList pl={2}>
+                {!notification.length && "No new messages"}
+                {notification.map((n, id) => (
+                  <MenuItem key={id}>
+                    {n.chat.isGroupChat
+                      ? `new message in ${n.chat.chatName}`
+                      : `New message from ${getSender(user, n.chat.users)}`}
+                  </MenuItem>
+                ))}
+              </MenuList>
             </MenuButton>
           </Menu>
           <Menu>

@@ -7,12 +7,15 @@ import { AddIcon } from "@chakra-ui/icons";
 import { getSender } from "../utils/chatHelper";
 import GroupChatModel from "./GroupChatModel";
 import ChatLoading from "./loader/ChatLoading";
+import UserChatDetails from "./UserChatDetails";
 
 const MyChats = () => {
   const [loggedUser, setLoggedUser] = useState();
+  const [loading, setLoading] = useState(false);
   const { fetchAgain, selectedChat, chats, setChats, setSelectedChat } =
     chatState();
   async function fetchChat() {
+    setLoading(true);
     try {
       const { data } = await axios.get(`${frontendUrl}api/v1/chat`, {
         headers: {
@@ -23,6 +26,7 @@ const MyChats = () => {
 
       setChats(data);
     } catch (error) {}
+    setLoading(false);
   }
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
@@ -61,48 +65,16 @@ const MyChats = () => {
         </GroupChatModel>
       </Box>
 
-      {chats.length === 0 ? (
-        <Spinner className="flex justify-center h-full items-center" />
+      {loading ? (
+        <div className="w-full h-full flex justify-center  items-center">
+          <Spinner size="2xl" />
+        </div>
+      ) : chats.length === 0 ? (
+        <div className="w-full h-full flex justify-center tracking-wide text-red-500  text-2xl items-center">
+          Search user to chat
+        </div>
       ) : (
-        <Box
-          p={3}
-          display="flex"
-          flexDir="column"
-          alignItems="center"
-          borderRadius="lg"
-          overflowY="hidden"
-          justifyContent="center"
-        >
-          {" "}
-          {chats ? (
-            <Stack overflowY="scroll" w="100% ">
-              {chats.map((chat) => {
-                return (
-                  <Box
-                    className="space-y-2"
-                    onClick={() => setSelectedChat(chat)}
-                    cursor="pointer"
-                    px={3}
-                    w="100%"
-                    color={selectedChat === chat ? "white" : "black"}
-                    bg={selectedChat === chat ? "#a3e635" : "#F8F8F8"}
-                    py={2}
-                    borderRadius="lg"
-                    key={chat._id}
-                  >
-                    <Text w="100%" className="px-3 text-lg">
-                      {!chat.isGroupChat
-                        ? getSender(loggedUser, chat.users)
-                        : chat.chatName}
-                    </Text>
-                  </Box>
-                );
-              })}
-            </Stack>
-          ) : (
-            <ChatLoading />
-          )}
-        </Box>
+        <UserChatDetails loggedUser={loggedUser} />
       )}
     </Box>
   );

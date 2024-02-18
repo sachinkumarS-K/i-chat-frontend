@@ -23,13 +23,13 @@ const ScrollableChat = ({ message }) => {
                 ) : (
                   <span className="mr-10"></span>
                 )}
-                <p className="text-lg bg-[#34d399] px-2 py-1 rounded-xl text-white">
+                <p className="sm:text-lg text-sm bg-[#34d399] px-2 py-1 rounded-xl text-white">
                   {m.content}
                 </p>
               </div>
             ) : (
               <div className="flex justify-end w-full">
-                <p className="text-lg bg-blue-400 px-2 py-1 rounded-xl text-white">
+                <p className="sm:text-lg text-sm bg-blue-400 px-2 py-1 rounded-xl text-white">
                   {m.content}
                 </p>
               </div>
