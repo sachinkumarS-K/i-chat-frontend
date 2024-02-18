@@ -86,7 +86,6 @@ const SingleChat = () => {
   console.log("noti", notification);
   useEffect(() => {
     socket.on("message recieved", (newMessageRecieved) => {
-      console.log(newMessageRecieved);
       if (
         !selectedChatCompare ||
         selectedChatCompare._id !== newMessageRecieved.chat._id
@@ -101,7 +100,7 @@ const SingleChat = () => {
         setMessages((pre) => [...pre, newMessageRecieved]);
       }
     });
-  });
+  }, []);
 
   async function fetChats() {
     if (!selectedChat) {
