@@ -98,15 +98,9 @@ const Login = () => {
       </FormControl>
       <button
         onClick={submitHandler}
-        className="bg-teal-300 w-full text-xl font-semibold text-white hover:bg-teal-400 transition-all duration-500 ease-in-out rounded-lg py-[8px] mt-1.5"
+        className="bg-teal-300 w-full text-xl font-semibold text-white hover:bg-teal-400 transition-all duration-500 ease-in-out rounded-lg py-[8px] mt-5"
       >
         Sign in
-      </button>
-      <button
-        onClick={() => submitHandler()}
-        className="bg-red-500 w-full text-xl font-semibold text-white hover:bg-red-600 transition-all duration-500 ease-in-out rounded-lg py-2 mt-1.5"
-      >
-        Get Guest User Credentials
       </button>
     </VStack>
   );

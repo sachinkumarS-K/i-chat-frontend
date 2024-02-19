@@ -67,7 +67,7 @@ const MyChats = () => {
 
       {loading ? (
         <div className="w-full h-full flex justify-center  items-center">
-          <Spinner size="2xl" />
+          <Spinner size="xl" />
         </div>
       ) : chats.length === 0 ? (
         <div className="w-full h-full flex justify-center tracking-wide text-red-500  text-2xl items-center">

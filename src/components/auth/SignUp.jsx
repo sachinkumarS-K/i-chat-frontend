@@ -135,7 +135,7 @@ const SignUp = () => {
       </FormControl>
       <button
         onClick={submitHandler}
-        className="bg-blue-400 w-full text-xl font-semibold text-white hover:bg-blue-500 transition-all duration-500 ease-in-out rounded-lg py-3 mt-1.5"
+        className="bg-teal-300 w-full text-xl font-semibold text-white hover:bg-red-600 transition-all duration-500 ease-in-out rounded-lg py-3 mt-1.5"
       >
         Sign Up
       </button>
